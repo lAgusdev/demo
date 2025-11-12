@@ -49,3 +49,13 @@
     -fx-border-radius: 5px;
     -fx-background-color: white;
 }
+
+.reportsButtons {
+    -fx-padding: 10px;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 25px;
+    -fx-background-radius: 5px; /* Bordes ligeramente redondeados */
+    -fx-min-width: 150px;
+    /* opciones visuales adicionales */
+}

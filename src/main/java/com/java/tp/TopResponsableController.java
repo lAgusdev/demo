@@ -10,4 +10,9 @@ public class TopResponsableController {
     private void switchToMainMenu() throws IOException {
         App.setRoot("reportMenu");
     }
+
+    @FXML
+    private void generateReport() throws IOException {
+        // Lógica para generar el reporte de destinos
+    }
 }

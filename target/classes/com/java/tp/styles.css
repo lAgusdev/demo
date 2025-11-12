@@ -8,7 +8,7 @@
 .label {
     /* Estilo por defecto para todas las etiquetas */
     -fx-font-family: "Arial";
-    -fx-text-fill: #333333;
+    -fx-text-fill: #050505;
 }
 
 /* Aplica este estilo a la etiqueta "Crear Viaje" usando styleClass="titulo-principal" */

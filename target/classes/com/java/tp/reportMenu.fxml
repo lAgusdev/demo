@@ -7,7 +7,7 @@
 
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.tp.ReportMenuController">
    <children>
-      <Label text="SELECCIONA REPORTE" />
+      <Label styleClass="titulo-principal" text="Selecciona un Reporte" />
       <Button fx:id="ResponsableReportButton" text="Responsable" onAction="#switchToResponsableReport"/>
       <Button fx:id="VehiculosReportButton" text="Vehiculos" onAction="#switchToVehiculosReport"/>
       <Button fx:id="PlacesReportButton" text="Destinos" onAction="#switchToPlacesReport"/>

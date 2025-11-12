@@ -7,7 +7,7 @@
 
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.tp.MainMenuController">
    <children>
-      <Label text="AGENCIA" />
+      <Label styleClass="titulo-principal" text="Agencia de Viaje" />
       <Button fx:id="createTravelButton" text="Crear Viaje" onAction="#switchToCreateTravel"/>
       <Button fx:id="reportsButton" text="Reportes" onAction="#switchToReports"/>
       <Button fx:id="exitButton" text="Salir" onAction="#switchToExit"/>

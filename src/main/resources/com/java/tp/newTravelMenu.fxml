@@ -9,7 +9,7 @@
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.tp.NewTravelController">
    
    <children>
-      <Label text="Crear Viaje" />
+      <Label styleClass="titulo-principal" text="Crear Viaje" />
       <Label text="Seleccione el destino del viaje:" />
       <ComboBox fx:id="opcionesComboBox" promptText="Destino"/>
       <Button fx:id="secondInstanceCreateTravelButton" text="Continuar" onAction="#switchToSecondInstanceCreateTravel"/>

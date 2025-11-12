@@ -11,7 +11,7 @@ public class MainMenuController {
     }
     @FXML
     private void switchToReports() throws IOException {
-        App.setRoot("reports");
+        App.setRoot("reportMenu");
     }
     @FXML
     private void switchToExit() throws IOException {

@@ -15,7 +15,8 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("mainMenu"), 640, 480);
+        scene = new Scene(loadFXML("mainMenu"), 1080, 720);
+        stage.setMaximized(true);
         scene.getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
         stage.setScene(scene);
         stage.show();

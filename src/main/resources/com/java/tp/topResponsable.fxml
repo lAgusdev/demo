@@ -3,11 +3,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.geometry.Insets?>
 
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.tp.TopResponsableController">
    <children>
       <Label styleClass="titulo-principal" text="Reporte de Responsables" />
+      <ListView fx:id="list" />
       <Button fx:id="GenerateReportButton" text="Generar Reporte" onAction="#generateReport"/>
       <Button fx:id="MainMenuButton" text="Volver" onAction="#switchToMainMenu"/>
    </children>

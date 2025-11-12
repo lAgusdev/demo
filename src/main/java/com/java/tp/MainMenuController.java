@@ -1,6 +1,8 @@
 package com.java.tp;
 
 import java.io.IOException;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 
 public class MainMenuController {
@@ -15,6 +17,6 @@ public class MainMenuController {
     }
     @FXML
     private void switchToExit() throws IOException {
-        App.setRoot("exit");
+        Platform.exit();
     }
 }

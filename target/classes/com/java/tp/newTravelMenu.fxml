@@ -5,17 +5,12 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.geometry.Insets?>
 
-<<<<<<< HEAD
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.tp.NewTravelController">
    
-=======
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.tp.NewTravelMenu">
->>>>>>> 71425b1b068cbbc601e62b2571d552d8a4b5d8ba
    <children>
       <Label text="Crear Viaje" />
       <Label text="Seleccione el destino del viaje:" />
-      <ComboBox fx:id="opcionesComboBox" promptText="Destino"/>
-      <Button fx:id="Continuar" text="Continuar View" onAction="#switchTosegundaEtapaCrearViajeLargaDis"/>
+      <Button fx:id="secondInstanceCreateTravelButton" text="Continuar" onAction="#switchToSecondInstanceCreateTravel"/>
    </children>
    
    <padding>

@@ -1,12 +1,14 @@
 package com.java.tp;
 
 import java.io.IOException;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 
-public class NewTravelMenu {
+public class SecondInstanceCreateTravelController {
 
     @FXML
     private void switchToSecondary() throws IOException {
-        App.setRoot("exit");
+        Platform.exit();
     }
 }

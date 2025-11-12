@@ -5,10 +5,13 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.geometry.Insets?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.tp.PrimaryController">
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.tp.MainMenuController">
    <children>
-      <Label text="Primary View" />
-      <Button fx:id="primaryButton" text="Switch to Secondary View" onAction="#switchToSecondary"/>
+      <Label text="AGENCIA" />
+      <Button fx:id="createTravelButton" text="Crear Viaje" onAction="#switchToCreateTravel"/>
+      <Button fx:id="reportsButton" text="Reportes" onAction="#switchToReports"/>
+      <Button fx:id="exitButton" text="Salir" onAction="#switchToExit"/>
+
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

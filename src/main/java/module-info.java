@@ -1,6 +1,7 @@
 module com.java.tp {
-    requires javafx.controls;
-    requires javafx.fxml;
+    requires transitive javafx.graphics;
+    requires transitive javafx.controls;
+    requires transitive javafx.fxml;
 
     opens com.java.tp to javafx.fxml;
     exports com.java.tp;

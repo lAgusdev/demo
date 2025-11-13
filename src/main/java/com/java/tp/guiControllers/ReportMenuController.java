@@ -9,7 +9,7 @@ public class ReportMenuController {
 
     @FXML
     private void switchToResponsableReport() throws IOException {
-        App.setRoot("topResponsable");
+        App.setRoot("topResponsables");
     }
     @FXML
     private void switchToVehiculosReport() throws IOException {

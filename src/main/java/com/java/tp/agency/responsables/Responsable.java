@@ -1,7 +1,7 @@
 package com.java.tp.agency.responsables;
-import Agencia.dominio.Exceptions.ResponsableInvalidoException;
-import Agencia.dominio.enums.Disponibilidad;
-import Agencia.dominio.enums.EstadoViaje;
+import com.java.tp.agency.exceptions.ResponsableInvalidoException;
+import com.java.tp.agency.enums.Unoccupied;
+import com.java.tp.agency.enums.TravelStatus;
 import jakarta.xml.bind.annotation.*;
 
 
@@ -11,7 +11,7 @@ public class Responsable {
     private String dni;
     private float salario;
     @XmlTransient
-    private Disponibilidad estado;
+    private Unoccupied estado;
 
     public Responsable(String inDni, String inNombre,float inSalario){
         if(inDni.length()!=8 || !inDni.matches("[0-9]{8}")){
@@ -25,7 +25,7 @@ public class Responsable {
         nombre = inNombre;
     }
 
-    public Responsable() {this.estado=Disponibilidad.DISPONIBLE;}
+    public Responsable() {this.estado=Unoccupied.DISPONIBLE;}
     //getters
     @XmlElement
     public float getSalario() {return salario;}
@@ -33,13 +33,13 @@ public class Responsable {
     public String getDni(){return dni;}
     @XmlElement
     public String getNombre() {return nombre;}
-    public Disponibilidad getEstado(){return estado;}
+    public Unoccupied getEstado(){return estado;}
     //
     //setters
     public void setSalario(float salario) { this.salario = salario; }
     public void setDni(String dni) { this.dni = dni; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     @XmlTransient
-    public void setEstado(Disponibilidad disponibilidad){this.estado=disponibilidad;}
+    public void setEstado(Unoccupied disponibilidad){this.estado=disponibilidad;}
     //
 }

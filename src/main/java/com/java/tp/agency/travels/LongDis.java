@@ -1,10 +1,10 @@
 package com.java.tp.agency.travels;
 
-import Agencia.dominio.Agencia;
-import Agencia.dominio.Destino;
-import Agencia.dominio.Exceptions.CamasLargaDisException;
-import Agencia.dominio.ResponsableABordo;
-import Agencia.dominio.Vehiculos.Vehiculo;
+import com.java.tp.agency.Agency;
+import com.java.tp.agency.places.Place;
+import com.java.tp.agency.exceptions.CamasLargaDisException;
+import com.java.tp.agency.responsables.Responsable;
+import com.java.tp.agency.vehicles.Vehicles;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -44,7 +44,7 @@ public class LongDis extends Travel{
         return total;
     }
     @Override
-    public float devuelveValorCalculado(Vehiculo vehiculo, Destino destino, HashMap<String,Responsable> responsableABordo, int cantPas, int cantCamas){
+    public float devuelveValorCalculado(Vehicles vehiculo, Place destino, HashMap<String,Responsable> responsableABordo, int cantPas, int cantCamas){
         if (cantPas-cantCamas>=6){
             throw new CamasLargaDisException("No hay tantos asientos sin cama disponibles");
         }

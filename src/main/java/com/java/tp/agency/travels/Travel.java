@@ -1,9 +1,10 @@
 package com.java.tp.agency.travels;
-import Agencia.dominio.Destino;
-import Agencia.dominio.Agencia;
-import Agencia.dominio.ResponsableABordo;
-import Agencia.dominio.Vehiculos.Vehiculo;
-import Agencia.dominio.enums.EstadoViaje;
+import com.java.tp.agency.places.Place;
+import com.java.tp.agency.Agency;
+import com.java.tp.agency.responsables.Responsable;
+import com.java.tp.agency.vehicles.Vehicles;
+import com.java.tp.agency.places.Place;
+import com.java.tp.agency.enums.Unoccupied;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
@@ -16,7 +17,7 @@ public  abstract class Travel {
     private String patVehiculo;
     private String idDestino; //se cambio para no duplicar los datos
     private int cPasajeros; //cantidad de pasajeros a bordo del viaje
-    private EstadoViaje estado;
+    private Unoccupied estado;
     private float kmRec;
     public  Travel(){ //constructor predef para json
     }
@@ -41,25 +42,25 @@ public  abstract class Travel {
     @XmlElement
     public String getIdDestino() {return idDestino;}
     @XmlTransient
-    public EstadoViaje getEstado() {return estado;}
+    public Unoccupied getEstado() {return estado;}
     //
     //Setters //los setters los usa el jaxb
     public void setId(String id) {this.id = id;}
     public void setcPasajeros(int cPasajeros) {this.cPasajeros = cPasajeros;}
-    public void setEstado(EstadoViaje estado) {this.estado = estado;}
+    public void setEstado(Unoccupied estado) {this.estado = estado;}
     public void setIdDestino(String idDestino) {this.idDestino = idDestino;}
     public void setKmRec(float kmRec) {this.kmRec = kmRec;}
     public void setPatVehiculo(String patVehiculo) {this.patVehiculo = patVehiculo;}
     //
-    public EstadoViaje actualizaEstadoViaje(String idDestino){
-        TreeMap<String,Destino> aux= Agency.getInstancia().getDestinos();//traigo el hashmap
-        Destino destinoaux=aux.get(idDestino);
+    public Unoccupied actualizaEstadoViaje(String idDestino){
+        TreeMap<String,Place> aux= Agency.getInstancia().getDestinos();//traigo el hashmap
+        Place destinoaux=aux.get(idDestino);
         if(destinoaux.getKm()== kmRec){
-            return  EstadoViaje.FINALIZADO;
+            return  Unoccupied.FINALIZADO;
         } else if (kmRec==0) {
-            return EstadoViaje.PENDIENTE;
+            return Unoccupied.PENDIENTE;
         }else {
-            return EstadoViaje.EN_CURSO;
+            return Unoccupied.EN_CURSO;
         }
     }
 
@@ -69,5 +70,5 @@ public  abstract class Travel {
 
 
 
-    public abstract float devuelveValorCalculado(Vehiculo vehiculo, Destino destino, HashMap<String,Responsable> responsableABordo, int cantPas, int cantCamas);
+    public abstract float devuelveValorCalculado(Vehicles vehiculo, Place destino, HashMap<String,Responsable> responsableABordo, int cantPas, int cantCamas);
 }

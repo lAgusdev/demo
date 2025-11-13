@@ -1,6 +1,6 @@
 package com.java.tp.agency.vehicles;
-import Agencia.dominio.Exceptions.VehiculoInvalidoException;
-import Agencia.dominio.enums.Disponibilidad;
+import com.java.tp.agency.exceptions.VehiculoInvalidoException;
+import com.java.tp.agency.enums.Unoccupied;
 import jakarta.xml.bind.annotation. *;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlSeeAlso({Car.class, MiniBus.class, BusSC.class, BusCC.class})
@@ -8,10 +8,10 @@ public abstract class Vehicles {
     private String patente;
     private int capacidad; // no lo usa json
     private float velPerH; //velocidad promedio por hora
-    private Disponibilidad estado; //enum no lo usa json
+    private Unoccupied estado; //enum no lo usa json
 
     public Vehicles(String patente,int capacidad,float velPerH){
-        this.estado=Disponibilidad.DISPONIBLE; //un auto creado siempre esta disponible
+        this.estado=Unoccupied.DISPONIBLE; //un auto creado siempre esta disponible
         if(!patente.matches("[0-9]{3}[A-Z]{3}") || !patente.matches("[0-9]{2}[A-Z]{3}[0-9]{2}")){
             throw new VehiculoInvalidoException("patente invalida"); //estos errores se controlan para el json esto desde el crea viaje no se puede
         }
@@ -26,11 +26,11 @@ public abstract class Vehicles {
         this.velPerH=velPerH;
     }
     public Vehicles(){
-        this.estado=Disponibilidad.DISPONIBLE;
+        this.estado=Unoccupied.DISPONIBLE;
     }
     //getters
     @XmlTransient
-    public Disponibilidad getEstado() {return estado;}
+    public Unoccupied getEstado() {return estado;}
     @XmlElement
     public String getPatente(){return patente;}
     @XmlElement
@@ -43,7 +43,7 @@ public abstract class Vehicles {
     public void setPatente(String patente) {this.patente = patente;}
     public void setVelPerH(float velPerH) {this.velPerH = velPerH;}
     public void setCapacidad(int capacidad) {this.capacidad = capacidad;}
-    public void setEstado(Disponibilidad disponibilidad){this.estado=disponibilidad;}
+    public void setEstado(Unoccupied disponibilidad){this.estado=disponibilidad;}
     //
 
     public abstract float calculaCosto(float km, int pasajeros, int cantCamas);

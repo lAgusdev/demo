@@ -1,17 +1,18 @@
 package com.java.tp.agency;
-import Agencia.dominio.Vehiculos.Vehiculo;
-import Agencia.dominio.Viajes.CortaDis;
-import Agencia.dominio.Viajes.LargaDis;
-import Agencia.dominio.Viajes.Viaje;
-import Agencia.dominio.enums.Disponibilidad;
-import Agencia.dominio.Exceptions.*;
+import com.java.tp.agency.vehicles.*;
+import com.java.tp.agency.travels.*;
+import com.java.tp.agency.enums.Unoccupied;
+import com.java.tp.agency.places.Place;
+import com.java.tp.agency.responsables.*;
+import com.java.tp.agency.vehicles.Vehicles;
+import com.java.tp.agency.exceptions.*;
 
 import java.util.*;
 public class Agency {
     private  static  Agency instancia;
-    private HashMap<String,Viaje> viajes = new HashMap<>();    //ordenado por id hashmap
+    private HashMap<String,Travel> viajes = new HashMap<>();    //ordenado por id hashmap
     private TreeMap<String,Place>destinos=new TreeMap<>();    //treemap por que el enunciado pide que esten ordenados alfabeticamente
-    private HashMap<String,Vehiculo>vehiculos=new HashMap<>(); //ordenado por patente
+    private HashMap<String,Vehicles>vehiculos=new HashMap<>(); //ordenado por patente
     private HashMap<String,Responsable>responsables=new HashMap<>(); //ordenado por dni
     private HashMap<String,Integer>cantViajes= new HashMap<>();
     private HashMap<String,Float>resKm= new HashMap<>(); //Hashmap para acumular, List para mostrar
@@ -46,15 +47,15 @@ public class Agency {
     //getters
     public HashMap<String,Responsable> getResponsables() {return responsables;}
     public HashMap<String, Integer> getCantViajes() {return cantViajes;}
-    public HashMap<String, Viaje> getViajes() {return viajes;}
+    public HashMap<String, Travel> getViajes() {return viajes;}
     public TreeMap<String,Place> getDestinos(){return destinos;}
-    public HashMap<String,Vehiculo> getVehiculos(){return vehiculos;}
+    public HashMap<String,Vehicles> getVehiculos(){return vehiculos;}
     //fin getter
 
-    public HashMap<String, Vehiculo> VehiculosDisponibles(){ //devuelve una lista con los vehiculos disponibles
-        HashMap<String, Vehiculo> aux=new HashMap<>();
-        for(Vehiculo v: vehiculos.values()){
-            if(v.getEstado()== Disponibilidad.DISPONIBLE){
+    public HashMap<String, Vehicles> VehiculosDisponibles(){ //devuelve una lista con los vehiculos disponibles
+        HashMap<String, Vehicles> aux=new HashMap<>();
+        for(Vehicles v: vehiculos.values()){
+            if(v.getEstado()== Unoccupied.DISPONIBLE){
                 aux.put(v.getPatente(),v);
             }
         }
@@ -67,7 +68,7 @@ public class Agency {
     public HashMap<String, Responsable> ResponsablesDisponibles(){ //devuelve una lista con los responsables disponibles
         HashMap<String, Responsable> aux=new HashMap<>();
         for(Responsable r: responsables.values()){
-            if(r.getEstado()== Disponibilidad.DISPONIBLE){
+            if(r.getEstado()== Unoccupied.DISPONIBLE){
                 aux.put(r.getDni(),r);
             }
         }
@@ -77,38 +78,38 @@ public class Agency {
         return aux;
     }
     public void muestraViajes(){
-        for(Viaje v: viajes.values()){
+        for(Travel v: viajes.values()){
             System.out.println(v.getId()+" || "+v.getIdDestino() + " || " + v.getEstado());
         }
     }
     public void crearViaje(String destino,String patVeh ,int pasajeros,float kmRec, TreeSet <String>res){
-        Viaje viajenuevo;
+        Travel viajenuevo;
         Place desAct=destinos.get(destino);
         String id=creaIdViaje(destino);
         System.out.println("=== DEBUG crearViaje ===");
         if(desAct.getKm()<100){//viaje corta
-            viajenuevo =new CortaDis(id,patVeh,destino,pasajeros,kmRec);
+            viajenuevo =new ShortDis(id,patVeh,destino,pasajeros,kmRec);
             System.out.println("=== viaje corta ===");
         }else{
             if(res.isEmpty()){
                 throw new SinResLargaDisException("la lista de responsables esta vacia");
             }
-            viajenuevo =new LargaDis(id,patVeh,destino,pasajeros,kmRec,res);
+            viajenuevo =new LongDis(id,patVeh,destino,pasajeros,kmRec,res);
         }
 
         viajes.put(id,viajenuevo);
-        Vehiculo v=vehiculos.get(patVeh);
-        v.setEstado(Disponibilidad.OCUPADO);
+        Vehicles v=vehiculos.get(patVeh);
+        v.setEstado(Unoccupied.OCUPADO);
         if (res != null) {
             for (String r : res) {
-                responsables.get(r).setEstado(Disponibilidad.OCUPADO);
+                responsables.get(r).setEstado(Unoccupied.OCUPADO);
             }
         }
     }
     
     public void inciaCV(){// el contador de destinos empieza en 1 osea "Mardelplata-1" "Mardelplata-2"...
         String destinoaux;
-        for(Viaje v: viajes.values()){
+        for(Travel v: viajes.values()){
             destinoaux=v.getId();
             if(!cantViajes.containsKey(destinoaux)){ //no contiene el destino
                 cantViajes.put(destinoaux,1);

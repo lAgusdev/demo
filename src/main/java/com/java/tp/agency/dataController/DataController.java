@@ -1,16 +1,14 @@
 package com.java.tp.agency.dataController;
-import Agencia.dominio.Agencia;
-import Agencia.dominio.Destino;
-import Agencia.dominio.Exceptions.*;
-import Agencia.dominio.ResponsableABordo;
-import Agencia.dominio.Vehiculos.*;
+import com.java.tp.agency.Agency;
+import com.java.tp.agency.places.Place;
+import com.java.tp.agency.exceptions.*;
+import com.java.tp.agency.responsables.Responsable;
+import com.java.tp.agency.vehicles.*;
+import com.java.tp.agency.travels.*;
 
 import java.io.*;
 import java.util.*;
 
-import Agencia.dominio.Viajes.CortaDis;
-import Agencia.dominio.Viajes.LargaDis;
-import Agencia.dominio.Viajes.Viaje;
 import jakarta.xml.bind.*;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -21,23 +19,23 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 
-public class Controlador {
-    private Agencia agencia; // atributo que guarda la instancia del dominio
+public class DataController {
+    private Agency agency; // atributo que guarda la instancia del dominio
 
-    public Controlador() {
-        this.agencia = Agencia.getInstancia(); // singleton
+    public DataController() {
+        this.agency = Agency.getInstancia(); // singleton
     }
 
     public void crearViaje(String destino, String patVeh, int pasajeros, float kmRec, TreeSet<String> res) throws SinResLargaDisException {
-        agencia.crearViaje(destino, patVeh, pasajeros, kmRec, res);
+        agency.crearViaje(destino, patVeh, pasajeros, kmRec, res);
     }
 
-    public HashMap<String, Vehiculo> VehiculosDisponibles() {
-        return Agencia.getInstancia().VehiculosDisponibles();
+    public HashMap<String, Vehicles> VehiculosDisponibles() {
+        return Agency.getInstancia().VehiculosDisponibles();
     }
 
-    public HashMap<String, ResponsableABordo> ResponsablesDisponibles() {
-        return Agencia.getInstancia().ResponsablesDisponibles();
+    public HashMap<String, Responsable> ResponsablesDisponibles() {
+        return Agency.getInstancia().ResponsablesDisponibles();
     }
 
     public void iniciaxml(){
@@ -47,9 +45,9 @@ public class Controlador {
         deserializaViajes();
     }
     private void deserealizaResponsables() {
-        HashMap<String, ResponsableABordo> res = agencia.getResponsables();
+        HashMap<String, Responsable> res = agency.getResponsables();
         try {
-            JAXBContext contexto = JAXBContext.newInstance(ResponsableABordo.class); //crea el contexto para pasar de xml a obj
+            JAXBContext contexto = JAXBContext.newInstance(Responsable.class); //crea el contexto para pasar de xml a obj
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
             XMLInputFactory factory = XMLInputFactory.newFactory();
             InputStream is = getClass().getClassLoader().getResourceAsStream("data/responsables.xml");
@@ -57,7 +55,7 @@ public class Controlador {
             while (reader.hasNext()) { //while !eof
                 if (reader.isStartElement() && reader.getLocalName().equals("responsable")) {
                     try {
-                        ResponsableABordo r = (ResponsableABordo) unmarshaller.unmarshal(reader);
+                        Responsable r = (Responsable) unmarshaller.unmarshal(reader);
                         if (r.getNombre().isEmpty()) {
                             throw new ResponsableInvalidoException("Nombre Vacio");
                         }
@@ -85,9 +83,9 @@ public class Controlador {
     }
 
     private void deserealizaDestinos() {
-        TreeMap<String, Destino> des = agencia.getDestinos();
+        TreeMap<String, Place> des = agency.getDestinos();
         try {
-            JAXBContext contexto = JAXBContext.newInstance(Destino.class);
+            JAXBContext contexto = JAXBContext.newInstance(Place.class);
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
             XMLInputFactory factory = XMLInputFactory.newFactory();
             InputStream is = getClass().getClassLoader().getResourceAsStream("data/destinos.xml");
@@ -95,7 +93,7 @@ public class Controlador {
             while (reader.hasNext()) { //while !eof
                 if (reader.isStartElement() && reader.getLocalName().equals("destino")) {
                     try {
-                        Destino d = (Destino) unmarshaller.unmarshal(reader);
+                        Place d = (Place) unmarshaller.unmarshal(reader);
                         if (d.getId().isEmpty()) {
                             throw new DestinoInvalidoException("Id Vacio");
                         }
@@ -121,9 +119,9 @@ public class Controlador {
     }
 
     private void deserializaVehiculos() {
-        HashMap<String, Vehiculo> veh = agencia.getVehiculos();
+        HashMap<String, Vehicles> veh = agency.getVehiculos();
         try {
-            JAXBContext contexto = JAXBContext.newInstance(Auto.class, Combi.class, ColectivoSC.class, ColectivoCC.class);
+            JAXBContext contexto = JAXBContext.newInstance(Car.class, MiniBus.class, BusSC.class, BusCC.class);
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
             XMLInputFactory factory = XMLInputFactory.newFactory();
             InputStream is = getClass().getClassLoader().getResourceAsStream("data/vehiculos.xml");
@@ -132,12 +130,12 @@ public class Controlador {
                 if (reader.isStartElement() && (reader.getLocalName().equals("auto")||reader.getLocalName().equals("combi")||reader.getLocalName().equals("colectivoSC")||reader.getLocalName().equals("colectivoCC"))) {
                     try {
                         String tag = reader.getLocalName();
-                        Vehiculo v = null;
+                        Vehicles v = null;
                         switch (tag) {
-                            case "auto": v = (Auto) unmarshaller.unmarshal(reader);break;
-                            case "combi": v = (Combi) unmarshaller.unmarshal(reader);break;
-                            case "colectivoSC": v = (ColectivoSC) unmarshaller.unmarshal(reader);break;
-                            case "colectivoCC": v = (ColectivoCC) unmarshaller.unmarshal(reader);break;
+                            case "auto": v = (Car) unmarshaller.unmarshal(reader);break;
+                            case "combi": v = (MiniBus) unmarshaller.unmarshal(reader);break;
+                            case "colectivoSC": v = (BusSC) unmarshaller.unmarshal(reader);break;
+                            case "colectivoCC": v = (BusCC) unmarshaller.unmarshal(reader);break;
                         }
                             if (v.getPatente().isEmpty()) {
                                 throw new VehiculoInvalidoException("Patente vacía");
@@ -150,7 +148,7 @@ public class Controlador {
                             }
                         switch (tag) {
                             case "auto" -> {
-                                Auto a = (Auto) v;
+                                Car a = (Car) v;
                                 if (a.getValKm() <= 0) {
                                     throw new VehiculoInvalidoException("Auto con valor por Km inválido");
                                 }
@@ -159,7 +157,7 @@ public class Controlador {
                                 }
                             }
                             case "combi" -> {
-                                Combi c = (Combi) v;
+                                MiniBus c = (MiniBus) v;
                                 if (c.getValPasajero() <= 0) {
                                     throw new VehiculoInvalidoException("Combi con valor por pasajero inválida");
                                 }
@@ -168,13 +166,13 @@ public class Controlador {
                                 }
                             }
                             case "colectivoSC" -> {
-                                ColectivoSC sc= (ColectivoSC) v;
+                                BusSC sc= (BusSC) v;
                                 if (sc.getValPasajero()<= 0) {
                                     throw new VehiculoInvalidoException("Colectivo con valor por Pasajero inválido");
                                 }
                             }
                             case "colectivoCC" ->{
-                                ColectivoCC cc=(ColectivoCC) v;
+                                BusCC cc=(BusCC) v;
                                 if(cc.getValPasajeroAsiento()<=0){
                                     throw new VehiculoInvalidoException("Colectivo con valor por asiento invalido");
                                 }
@@ -201,9 +199,9 @@ public class Controlador {
     }
 
     public void deserializaViajes(){
-        HashMap<String, Viaje> via = agencia.getViajes();
+        HashMap<String, Travel> via = agency.getViajes();
         try {
-            JAXBContext contexto = JAXBContext.newInstance(LargaDis.class,CortaDis.class);
+            JAXBContext contexto = JAXBContext.newInstance(LongDistance.class,ShortDistance.class);
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
             XMLInputFactory factory = XMLInputFactory.newFactory();
             InputStream is = getClass().getClassLoader().getResourceAsStream("data/viajes.xml");
@@ -211,12 +209,12 @@ public class Controlador {
             while (reader.hasNext()) { //while !eof
                 if (reader.isStartElement() && (reader.getLocalName().equals("largaDis")|| reader.getLocalName().equals("cortaDis"))){
                     String tag = reader.getLocalName();
-                    Viaje v = null;
+                    Travel v = null;
                     switch (tag){
-                        case "largaDis":v = (LargaDis) unmarshaller.unmarshal(reader);break;
-                        case "cortaDis":v = (CortaDis) unmarshaller.unmarshal(reader);break;
+                        case "largaDis":v = (LongDis) unmarshaller.unmarshal(reader);break;
+                        case "cortaDis":v = (ShortDis) unmarshaller.unmarshal(reader);break;
                     }
-                    v.setId(Agencia.getInstancia().creaIdViaje(v.getIdDestino()));
+                    v.setId(Agency.getInstancia().creaIdViaje(v.getIdDestino()));
                     v.setEstado(v.actualizaEstadoViaje(v.getIdDestino()));
                     via.put(v.getId(), v);
                 }
@@ -229,17 +227,17 @@ public class Controlador {
         }
     }
     public void muestraviajes(){
-        agencia.muestraViajes();
+        agency.muestraViajes();
     }
     public void serializaViajes() {
-        List<Viaje> listaViajes = new ArrayList<>(agencia.getViajes().values());
+        List<Travel> listaViajes = new ArrayList<>(agency.getViajes().values());
         try {
-            JAXBContext contexto = JAXBContext.newInstance(Viaje.class, LargaDis.class, CortaDis.class);
+            JAXBContext contexto = JAXBContext.newInstance(Travel.class, LongDis.class, ShortDis.class);
             Marshaller marshaller = contexto.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             StringWriter sw = new StringWriter();
             sw.write("<viajes>\n");
-            for (Viaje viaje : listaViajes) {
+            for (Travel viaje : listaViajes) {
                 StringWriter viajeWriter = new StringWriter();
                 marshaller.marshal(viaje, viajeWriter);
                 String viajeXml = viajeWriter.toString();

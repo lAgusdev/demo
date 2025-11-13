@@ -1,6 +1,9 @@
-package com.java.tp;
+package com.java.tp.guiControllers;
 import java.io.IOException;
 import java.util.List;
+
+import com.java.tp.App;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

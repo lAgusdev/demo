@@ -1,18 +1,21 @@
-package com.java.tp;
+package com.java.tp.guiControllers;
 import java.io.IOException;
 import java.util.List;
+
+import com.java.tp.App;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 
-public class TopResponsableController {
+public class TopVehiclesController {
 
     @FXML
     private javafx.scene.control.ListView<String> list;
 
     @FXML
     private void initialize() {
-        List<String> lista = List.of("Alejandro", "Alfonso", "Maria", "Gonzalez", "Pedro", "Luis", "Martinez", "Ana", "Lucia", "Rodriguez", "Carlos", "Javier", "Lopez", "Sofia", "Elena");
+        List<String> lista = List.of("Auto", "Camión", "Motocicleta", "Bicicleta", "Autobús");
         ObservableList<String> items = FXCollections.observableArrayList(lista);
         list.setItems(items);
     }

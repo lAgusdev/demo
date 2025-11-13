@@ -1,4 +1,4 @@
-package com.java.tp;
+package com.java.tp.guiControllers;
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -7,6 +7,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.layout.HBox;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.java.tp.App;
 
 public class NewTravelController {
 

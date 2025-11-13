@@ -1,5 +1,8 @@
-package com.java.tp;
+package com.java.tp.guiControllers;
 import java.io.IOException;
+
+import com.java.tp.App;
+
 import javafx.fxml.FXML;
 
 public class ReportMenuController {

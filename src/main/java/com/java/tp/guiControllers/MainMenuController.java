@@ -1,4 +1,4 @@
-package com.java.tp;
+package com.java.tp.guiControllers;
 
 import java.io.IOException;
 
@@ -9,11 +9,11 @@ public class MainMenuController {
 
     @FXML
     private void switchToCreateTravel() throws IOException {
-        App.setRoot("newTravelMenu");
+        com.java.tp.App.setRoot("newTravelMenu");
     }
     @FXML
     private void switchToReports() throws IOException {
-        App.setRoot("reportMenu");
+        com.java.tp.App.setRoot("reportMenu");
     }
     @FXML
     private void switchToExit() throws IOException {

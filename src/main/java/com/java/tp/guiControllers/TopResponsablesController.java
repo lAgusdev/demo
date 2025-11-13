@@ -8,7 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 
-public class TopResponsableController {
+public class TopResponsablesController {
 
     @FXML
     private javafx.scene.control.ListView<String> list;

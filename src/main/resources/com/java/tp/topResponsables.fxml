@@ -7,7 +7,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.geometry.Insets?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.tp.guiControllers.TopResponsableController">
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.tp.guiControllers.TopResponsablesController">
    <children>
       <Label styleClass="titulo-principal" text="Reporte de Responsables" />
       <ListView fx:id="list" />

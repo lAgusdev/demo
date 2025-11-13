@@ -24,7 +24,8 @@ public class TopVehiclesController {
     private void switchToMainMenu() throws IOException {
         App.setRoot("reportMenu");
     }
-
+    
+    /** generador de reportes de vehiculos */
     @FXML
     private void generateReport() throws IOException {
         // Lógica para generar el reporte de destinos

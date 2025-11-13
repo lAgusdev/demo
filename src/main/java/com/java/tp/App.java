@@ -9,7 +9,15 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * @author Franco Di Meglio
+ * @author Manuel Juárez
+ * @author Gaspar Puente Villaroel
+ * @author Agustin Nodar
+ * @version 1.0
+ */
 
+/** main */
 public class App extends Application {
 
     private static Scene scene;

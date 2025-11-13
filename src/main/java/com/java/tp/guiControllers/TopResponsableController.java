@@ -25,6 +25,7 @@ public class TopResponsableController {
         App.setRoot("reportMenu");
     }
 
+    /** generador de reportes de responsables */
     @FXML
     private void generateReport() throws IOException {
         // Lógica para generar el reporte de destinos

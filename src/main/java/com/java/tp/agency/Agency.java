@@ -1,5 +1,4 @@
 package com.java.tp.agency;
-import com.java.tp.agency.vehicles.*;
 import com.java.tp.agency.travels.*;
 import com.java.tp.agency.enums.Unoccupied;
 import com.java.tp.agency.places.Place;

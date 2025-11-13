@@ -201,7 +201,7 @@ public class DataController {
     public void deserializaViajes(){
         HashMap<String, Travel> via = agency.getViajes();
         try {
-            JAXBContext contexto = JAXBContext.newInstance(LongDistance.class,ShortDistance.class);
+            JAXBContext contexto = JAXBContext.newInstance(LongDis.class,ShortDis.class);
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
             XMLInputFactory factory = XMLInputFactory.newFactory();
             InputStream is = getClass().getClassLoader().getResourceAsStream("data/viajes.xml");

@@ -3,7 +3,6 @@ import com.java.tp.agency.places.Place;
 import com.java.tp.agency.Agency;
 import com.java.tp.agency.responsables.Responsable;
 import com.java.tp.agency.vehicles.Vehicles;
-import com.java.tp.agency.places.Place;
 import com.java.tp.agency.enums.Unoccupied;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -56,7 +55,7 @@ public  abstract class Travel {
         TreeMap<String,Place> aux= Agency.getInstancia().getDestinos();//traigo el hashmap
         Place destinoaux=aux.get(idDestino);
         if(destinoaux.getKm()== kmRec){
-            return  Unoccupied.FINALIZADO;
+            return Unoccupied.FINALIZADO;
         } else if (kmRec==0) {
             return Unoccupied.PENDIENTE;
         }else {

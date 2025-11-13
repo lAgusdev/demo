@@ -10,9 +10,6 @@ import java.io.*;
 import java.util.*;
 
 import jakarta.xml.bind.*;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -147,7 +144,7 @@ public class DataController {
                                 throw new VehiculoInvalidoException("Patente repetida");
                             }
                         switch (tag) {
-                            case "auto" -> {
+                            case "auto" : 
                                 Car a = (Car) v;
                                 if (a.getValKm() <= 0) {
                                     throw new VehiculoInvalidoException("Auto con valor por Km inválido");
@@ -155,8 +152,8 @@ public class DataController {
                                 if(a.getValBase()<=0){
                                     throw new VehiculoInvalidoException("Auto con valor base inválido");
                                 }
-                            }
-                            case "combi" -> {
+                            break;
+                            case "combi" :
                                 MiniBus c = (MiniBus) v;
                                 if (c.getValPasajero() <= 0) {
                                     throw new VehiculoInvalidoException("Combi con valor por pasajero inválida");
@@ -164,14 +161,14 @@ public class DataController {
                                 if (c.getValBase()<=0){
                                     throw new VehiculoInvalidoException("Combi con valor base invalida");
                                 }
-                            }
-                            case "colectivoSC" -> {
+                            break;
+                            case "colectivoSC" :
                                 BusSC sc= (BusSC) v;
                                 if (sc.getValPasajero()<= 0) {
                                     throw new VehiculoInvalidoException("Colectivo con valor por Pasajero inválido");
                                 }
-                            }
-                            case "colectivoCC" ->{
+                            break;
+                            case "colectivoCC" :
                                 BusCC cc=(BusCC) v;
                                 if(cc.getValPasajeroAsiento()<=0){
                                     throw new VehiculoInvalidoException("Colectivo con valor por asiento invalido");
@@ -179,7 +176,7 @@ public class DataController {
                                 if (cc.getValPasajeroCama()<=0){
                                     throw new VehiculoInvalidoException("Colectivo con valor por cama invalido");
                                 }
-                            }
+                            break;
 
                         }
                         veh.put(v.getPatente(), v);

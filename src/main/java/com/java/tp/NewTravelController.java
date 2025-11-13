@@ -1,5 +1,4 @@
 package com.java.tp;
-
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -165,6 +164,10 @@ public class NewTravelController {
     // --- Método de Acción principal ---
 
     @FXML
+    private void switchToMainMenu() throws IOException {
+        App.setRoot("mainMenu");
+    }
+    @FXML
     private void crearViaje() throws IOException {
         String destino = destinoComboBox.getValue();
         String vehiculo = vehiculoComboBox.getValue();
@@ -194,7 +197,7 @@ public class NewTravelController {
         } else {
             System.out.println("Responsables: No Aplica (Corta Distancia)");
         }
-        
+        App.setRoot("menuPostNewTravel");
         mostrarAlerta("Viaje Creado", "¡El viaje a " + destino + " ha sido creado con éxito!");
     }
 

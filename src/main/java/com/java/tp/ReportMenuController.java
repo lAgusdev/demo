@@ -1,5 +1,4 @@
 package com.java.tp;
-
 import java.io.IOException;
 import javafx.fxml.FXML;
 

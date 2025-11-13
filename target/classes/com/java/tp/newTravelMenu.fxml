@@ -52,7 +52,7 @@
                     </VBox>
                 </children>
             </HBox>
-            
+            <Button fx:id="MainMenuButton" text="Volver" onAction="#switchToMainMenu" maxWidth="Infinity"/>
             <Button text="Crear Viaje" onAction="#crearViaje" maxWidth="Infinity"/>
         </children>
         

@@ -17,14 +17,9 @@ import javax.xml.stream.XMLStreamReader;
 
 
 public class DataController {
-    private Agency agency; // atributo que guarda la instancia del dominio
-
-    public DataController() {
-        this.agency = Agency.getInstancia(); // singleton
-    }
 
     public void crearViaje(String destino, String patVeh, int pasajeros, float kmRec, TreeSet<String> res) throws SinResLargaDisException {
-        agency.crearViaje(destino, patVeh, pasajeros, kmRec, res);
+        Agency.getInstancia().crearViaje(destino, patVeh, pasajeros, kmRec, res);
     }
 
     public HashMap<String, Vehicles> VehiculosDisponibles() {
@@ -42,12 +37,16 @@ public class DataController {
         deserializaViajes();
     }
     private void deserealizaResponsables() {
-        HashMap<String, Responsable> res = agency.getResponsables();
+        HashMap<String, Responsable> res = Agency.getInstancia().getResponsables();
         try {
             JAXBContext contexto = JAXBContext.newInstance(Responsable.class); //crea el contexto para pasar de xml a obj
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
             XMLInputFactory factory = XMLInputFactory.newFactory();
-            InputStream is = getClass().getClassLoader().getResourceAsStream("data/responsables.xml");
+            InputStream is = getClass().getResourceAsStream("/com/java/tp/data/responsables.xml");
+            if (is == null) {
+                System.out.println("Recurso no encontrado: com/java/tp/data/responsables.xml");
+                return;
+            }
             XMLStreamReader reader = factory.createXMLStreamReader(is);
             while (reader.hasNext()) { //while !eof
                 if (reader.isStartElement() && reader.getLocalName().equals("responsable")) {
@@ -80,12 +79,16 @@ public class DataController {
     }
 
     private void deserealizaDestinos() {
-        TreeMap<String, Place> des = agency.getDestinos();
+        TreeMap<String, Place> des = Agency.getInstancia().getDestinos();
         try {
             JAXBContext contexto = JAXBContext.newInstance(Place.class);
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
             XMLInputFactory factory = XMLInputFactory.newFactory();
-            InputStream is = getClass().getClassLoader().getResourceAsStream("data/destinos.xml");
+            InputStream is = getClass().getResourceAsStream("/com/java/tp/data/destinos.xml");
+            if (is == null) {
+                System.out.println("Recurso no encontrado: com/java/tp/data/destinos.xml");
+                return;
+            }
             XMLStreamReader reader = factory.createXMLStreamReader(is);
             while (reader.hasNext()) { //while !eof
                 if (reader.isStartElement() && reader.getLocalName().equals("destino")) {
@@ -116,12 +119,16 @@ public class DataController {
     }
 
     private void deserializaVehiculos() {
-        HashMap<String, Vehicles> veh = agency.getVehiculos();
+        HashMap<String, Vehicles> veh = Agency.getInstancia().getVehiculos();
         try {
             JAXBContext contexto = JAXBContext.newInstance(Car.class, MiniBus.class, BusSC.class, BusCC.class);
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
             XMLInputFactory factory = XMLInputFactory.newFactory();
-            InputStream is = getClass().getClassLoader().getResourceAsStream("data/vehiculos.xml");
+            InputStream is = getClass().getResourceAsStream("/com/java/tp/data/vehiculos.xml");
+            if (is == null) {
+                System.out.println("Recurso no encontrado: com/java/tp/data/vehiculos.xml");
+                return;
+            }
             XMLStreamReader reader = factory.createXMLStreamReader(is);
             while (reader.hasNext()) { //while !eof
                 if (reader.isStartElement() && (reader.getLocalName().equals("auto")||reader.getLocalName().equals("combi")||reader.getLocalName().equals("colectivoSC")||reader.getLocalName().equals("colectivoCC"))) {
@@ -196,12 +203,16 @@ public class DataController {
     }
 
     public void deserializaViajes(){
-        HashMap<String, Travel> via = agency.getViajes();
+        HashMap<String, Travel> via = Agency.getInstancia().getViajes();
         try {
             JAXBContext contexto = JAXBContext.newInstance(LongDis.class,ShortDis.class);
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
             XMLInputFactory factory = XMLInputFactory.newFactory();
-            InputStream is = getClass().getClassLoader().getResourceAsStream("data/viajes.xml");
+            InputStream is = getClass().getResourceAsStream("/com/java/tp/data/viajes.xml");
+            if (is == null) {
+                System.out.println("Recurso no encontrado: com/java/tp/data/viajes.xml");
+                return;
+            }
             XMLStreamReader reader = factory.createXMLStreamReader(is);
             while (reader.hasNext()) { //while !eof
                 if (reader.isStartElement() && (reader.getLocalName().equals("largaDis")|| reader.getLocalName().equals("cortaDis"))){
@@ -224,10 +235,10 @@ public class DataController {
         }
     }
     public void muestraviajes(){
-        agency.muestraViajes();
+        Agency.getInstancia().muestraViajes();
     }
     public void serializaViajes() {
-        List<Travel> listaViajes = new ArrayList<>(agency.getViajes().values());
+        List<Travel> listaViajes = new ArrayList<>(Agency.getInstancia().getViajes().values());
         try {
             JAXBContext contexto = JAXBContext.newInstance(Travel.class, LongDis.class, ShortDis.class);
             Marshaller marshaller = contexto.createMarshaller();
@@ -238,11 +249,13 @@ public class DataController {
                 StringWriter viajeWriter = new StringWriter();
                 marshaller.marshal(viaje, viajeWriter);
                 String viajeXml = viajeWriter.toString();
-                String contenido = viajeXml.substring(viajeXml.indexOf("?>") + 2).trim();
+                int idx = viajeXml.indexOf("?>");
+                String contenido = (idx != -1) ? viajeXml.substring(idx + 2).trim() : viajeXml.trim();
                 sw.write("    " + contenido + "\n");
             }
             sw.write("</viajes>");
-            File archivo = new File("src/data/viajes.xml");
+            File archivo = new File("src/main/resources/com/java/tp/data/viajes.xml");
+            archivo.getParentFile().mkdirs();
             try (FileWriter fw = new FileWriter(archivo)) {
                 fw.write(sw.toString());
             }

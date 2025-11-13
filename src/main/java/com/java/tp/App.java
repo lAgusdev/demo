@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.io.IOException; 
+import com.java.tp.agency.Agency;
+import com.java.tp.agency.dataController.DataController;
 
 /**
  * @author Franco Di Meglio
@@ -21,11 +23,31 @@ public class App extends Application {
 
     private static Scene scene;
 
+    // Inicializa el singleton Agency
+    public App() {
+        Agency.getInstancia();
+    }
+
+    @Override
+    public void init() {
+        // Cargar datos antes de que se inicialice la UI (se ejecuta en el launcher thread)
+        try {
+            new DataController().iniciaxml();
+        } catch (Exception e) {
+            System.out.println("Error al cargar datos en init(): " + e.getMessage());
+        }
+    }
+    
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("mainMenu"), 1080, 720);
-        Image icon = new Image(getClass().getResourceAsStream("/com/java/tp/img/icon.png"));
-        stage.getIcons().add(icon);
+        java.io.InputStream iconIs = App.class.getResourceAsStream("/com/java/tp/img/icon.png");
+        if (iconIs != null) {
+            Image icon = new Image(iconIs);
+            stage.getIcons().add(icon);
+        } else {
+            System.out.println("Icon resource not found: /com/java/tp/img/icon.png");
+        }
         stage.setTitle("Agencia de Viajes");
         stage.setMaximized(true);
         scene.getStylesheets().add(App.class.getResource("/com/java/tp/styles/styles.css").toExternalForm());

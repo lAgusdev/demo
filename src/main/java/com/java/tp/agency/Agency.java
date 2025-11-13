@@ -5,7 +5,6 @@ import com.java.tp.agency.places.Place;
 import com.java.tp.agency.responsables.*;
 import com.java.tp.agency.vehicles.Vehicles;
 import com.java.tp.agency.exceptions.*;
-
 import java.util.*;
 public class Agency {
     private  static  Agency instancia;
@@ -21,8 +20,9 @@ public class Agency {
     }
 
     public static Agency getInstancia(){
-        if (instancia==null)
-            instancia=new Agency();
+        if (instancia==null) {
+            instancia = new Agency();
+        }
         return instancia;
     }
 

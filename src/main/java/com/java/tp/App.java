@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -16,8 +17,11 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("mainMenu"), 1080, 720);
+        Image icon = new Image(getClass().getResourceAsStream("/com/java/tp/img/icon.png"));
+        stage.getIcons().add(icon);
+        stage.setTitle("Agencia de Viajes");
         stage.setMaximized(true);
-        scene.getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
+        scene.getStylesheets().add(App.class.getResource("/com/java/tp/styles/styles.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
     }

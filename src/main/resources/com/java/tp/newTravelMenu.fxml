@@ -12,11 +12,6 @@
 <?import java.net.URL?>
 
 <StackPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.tp.NewTravelController">
-    
-    <stylesheets>
-         <URL value="@styles.css" />
-    </stylesheets>
-
     <VBox alignment="CENTER" spacing="15.0" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 10;" prefWidth="650.0"> 
         <children>
             <Label text="Crear Nuevo Viaje" styleClass="titulo-principal"/>
@@ -55,7 +50,6 @@
             <Button fx:id="MainMenuButton" text="Volver" onAction="#switchToMainMenu" maxWidth="Infinity"/>
             <Button text="Crear Viaje" onAction="#crearViaje" maxWidth="Infinity"/>
         </children>
-        
         <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
         </padding>

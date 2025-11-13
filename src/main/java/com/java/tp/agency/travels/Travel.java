@@ -3,7 +3,7 @@ import com.java.tp.agency.places.Place;
 import com.java.tp.agency.Agency;
 import com.java.tp.agency.responsables.Responsable;
 import com.java.tp.agency.vehicles.Vehicles;
-import com.java.tp.agency.enums.Unoccupied;
+import com.java.tp.agency.enums.TravelStatus;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
@@ -16,7 +16,7 @@ public  abstract class Travel {
     private String patVehiculo;
     private String idDestino; //se cambio para no duplicar los datos
     private int cPasajeros; //cantidad de pasajeros a bordo del viaje
-    private Unoccupied estado;
+    private TravelStatus estado;
     private float kmRec;
     public  Travel(){ //constructor predef para json
     }
@@ -41,25 +41,25 @@ public  abstract class Travel {
     @XmlElement
     public String getIdDestino() {return idDestino;}
     @XmlTransient
-    public Unoccupied getEstado() {return estado;}
+    public TravelStatus getEstado() {return estado;}
     //
     //Setters //los setters los usa el jaxb
     public void setId(String id) {this.id = id;}
     public void setcPasajeros(int cPasajeros) {this.cPasajeros = cPasajeros;}
-    public void setEstado(Unoccupied estado) {this.estado = estado;}
+    public void setEstado(TravelStatus estado) {this.estado = estado;}
     public void setIdDestino(String idDestino) {this.idDestino = idDestino;}
     public void setKmRec(float kmRec) {this.kmRec = kmRec;}
     public void setPatVehiculo(String patVehiculo) {this.patVehiculo = patVehiculo;}
     //
-    public Unoccupied actualizaEstadoViaje(String idDestino){
+    public TravelStatus actualizaEstadoViaje(String idDestino){
         TreeMap<String,Place> aux= Agency.getInstancia().getDestinos();//traigo el hashmap
         Place destinoaux=aux.get(idDestino);
         if(destinoaux.getKm()== kmRec){
-            return Unoccupied.FINALIZADO;
+            return TravelStatus.FINALIZADO;
         } else if (kmRec==0) {
-            return Unoccupied.PENDIENTE;
+            return TravelStatus.PENDIENTE;
         }else {
-            return Unoccupied.EN_CURSO;
+            return TravelStatus.EN_CURSO;
         }
     }
 

@@ -1,7 +1,6 @@
 package com.java.tp.agency.responsables;
 import com.java.tp.agency.exceptions.ResponsableInvalidoException;
 import com.java.tp.agency.enums.Unoccupied;
-import com.java.tp.agency.enums.TravelStatus;
 import jakarta.xml.bind.annotation.*;
 
 

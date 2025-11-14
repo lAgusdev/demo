@@ -1,10 +1,5 @@
 package com.java.tp.agency.responsables;
-
-import com.java.tp.agency.exceptions.ResponsableInvalidoException;
-import com.java.tp.agency.enums.Unoccupied;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlTransient;
+import com.java.tp.agency.responsables.Responsable;
 
 
 public class ResponsableKM {

@@ -222,9 +222,17 @@ public class DataController {
                         case "largaDis":v = (LongDis) unmarshaller.unmarshal(reader);break;
                         case "cortaDis":v = (ShortDis) unmarshaller.unmarshal(reader);break;
                     }
-                    v.setId(Agency.getInstancia().creaIdViaje(v.getIdDestino()));
-                    v.setEstado(v.actualizaEstadoViaje(v.getIdDestino()));
-                    via.put(v.getId(), v);
+                    if (v == null) {
+                        // Skip malformed or unmarshal-failed entries
+                        continue;
+                    }
+                    try {
+                        v.setId(Agency.getInstancia().creaIdViaje(v.getIdDestino()));
+                        v.setEstado(v.actualizaEstadoViaje(v.getIdDestino()));
+                        via.put(v.getId(), v);
+                    } catch (Exception e) {
+                        System.out.println("Viaje inválido al asignar id/estado: " + e.getMessage());
+                    }
                 }
                 reader.next();
             }

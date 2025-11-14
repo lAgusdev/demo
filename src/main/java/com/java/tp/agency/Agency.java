@@ -119,16 +119,12 @@ public class Agency {
         }
     }
 
-    public String creaIdViaje(String destino){
-        String id,numid;
-        if (cantViajes.containsKey(destino)){
-            cantViajes.replace(destino,cantViajes.get(destino) + 1);
-            numid= String.valueOf(cantViajes.get(destino));
-        }else{
-            cantViajes.put(destino,1);
-            numid ="1";
-        }
-        id= destino +"-"+ numid;
-        return id;
+public String creaIdViaje(String destino){
+    // Ensure we have a counter for this destination. If absent, start at 1.
+    int contador = cantViajes.getOrDefault(destino, 1);
+    String id = destino + "-" + contador;
+    // Store next counter value
+    cantViajes.put(destino, contador + 1);
+    return id;
     }
 }

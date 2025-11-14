@@ -21,34 +21,35 @@ public class TopVehiclesController {
     @FXML
     private javafx.scene.control.ListView<String> list;
 
-    /**
-     * Método auxiliar para obtener la lista de vehículos formateada, ordenada
-     * y con el número de puesto (ranking) al inicio.
-     * @return Una lista de Strings con los vehículos formateados ("#Puesto - Patente - TipoVehiculo - Vel/H: X").
-     */
     private List<String> getVehiculosFormateados() {
         HashMap<String, Vehicles> veh = Agency.getInstancia().getVehiculos();
         
         if (veh == null || veh.isEmpty()) {
             return List.of("No hay vehículos cargados");
         } else {
-            // 1. Obtener la lista de vehículos formateada y ordenada (base)
-            // Se utiliza getClass().getSimpleName() para obtener el tipo de vehículo.
-            List<String> vehiculosOrdenados = veh.values().stream()
-                .map(v -> v.getPatente() + " - " + v.getClass().getSimpleName() + " - Vel/H: " + v.getVelPerH())
-                .sorted() 
-                .collect(Collectors.toList());
-
-            List<String> listaConPuesto = new ArrayList<>();
-            
-            // 2. Iterar sobre la lista ordenada para añadir el número de puesto (ranking)
-            for (int i = 0; i < vehiculosOrdenados.size(); i++) {
-                // Se añade el número de posición (i + 1). Ejemplo: "#1 - ABC123 - Car - Vel/H: 100"
-                String linea = String.format("#%d - %s", (i + 1), vehiculosOrdenados.get(i)); 
-                listaConPuesto.add(linea);
+            int acumBusCC = 0, acumBusSC = 0, acumMiniBus = 0, acumCar = 0;
+            for (Vehicles v : veh.values()) {
+                switch (v.getCapacidad()) {
+                    case 32:
+                        acumBusCC += 1;
+                        break;
+                    case 40:
+                        acumBusSC += 1;
+                        break;
+                    case 16:
+                        acumMiniBus += 1;
+                        break;
+                    case 4:
+                        acumCar += 1;
+                        break;
+                }
             }
-            
-            return listaConPuesto;
+            List<String> vehicleReport = new ArrayList<>();
+            vehicleReport.add("Colectivo coche-cama: " + acumBusCC);
+            vehicleReport.add("Colectivo semi-cama: " + acumBusSC);
+            vehicleReport.add("Combi: " + acumMiniBus);
+            vehicleReport.add("Auto: " + acumCar);
+            return vehicleReport;
         }
     }
 
@@ -94,14 +95,14 @@ public class TopVehiclesController {
             return;
         }
 
-        // 1. Añadir encabezado al reporte
+        // Añadir encabezado al reporte
         lineasReporte.add(0, "--- REPORTE DE VEHÍCULOS DE LA AGENCIA ---");
         
-        // 2. Generar nombre de archivo único con timestamp
+        // Generar nombre de archivo único con timestamp
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
         String nombreArchivo = "Reporte_Vehiculos_" + timestamp + ".txt";
         
-        // 3. Definir la ruta del archivo (se guardará en el directorio de ejecución del programa)
+        // Definir la ruta del archivo (se guardará en el directorio de ejecución del programa)
         Path rutaArchivo = Path.of("reports/" + nombreArchivo);
         
         try {

@@ -265,7 +265,7 @@ public class DataController {
                 sw.write("    " + contenido + "\n");
             }
             sw.write("</viajes>");
-            File archivo = new File("src/main/resources/com/java/tp/data/viajes.xml");
+            File archivo = new File("/com/java/tp/data/viajes.xml");
             archivo.getParentFile().mkdirs();
             try (FileWriter fw = new FileWriter(archivo)) {
                 fw.write(sw.toString());

@@ -30,24 +30,27 @@ public class DataController {
         return Agency.getInstancia().ResponsablesDisponibles();
     }
 
-    public void iniciaxml(){
-        deserealizaResponsables();
-        deserealizaDestinos();
-        deserializaVehiculos();
-        deserializaViajes();
+    public void iniciaxml(Agency agency){
+        deserealizaResponsables(agency);
+        deserealizaDestinos(agency);
+        deserializaVehiculos(agency);
+        deserializaViajes(agency);
     }
-    private void deserealizaResponsables() {
-        HashMap<String, Responsable> res = Agency.getInstancia().getResponsables();
+    private void deserealizaResponsables(Agency agency) {
+        HashMap<String, Responsable> res = agency.getResponsables();
         try {
-            JAXBContext contexto = JAXBContext.newInstance(Responsable.class); //crea el contexto para pasar de xml a obj
-            Unmarshaller unmarshaller = contexto.createUnmarshaller();
-            XMLInputFactory factory = XMLInputFactory.newFactory();
-            InputStream is = getClass().getResourceAsStream("/com/java/tp/data/responsables.xml");
+            JAXBContext contexto = JAXBContext.newInstance(Responsable.class); //se instancia el contexto a partir de la clase Responsable para pasar de xml a obj
+            Unmarshaller unmarshaller = contexto.createUnmarshaller(); //se crea el encargado de convertir el XML a objetos Java.
+            XMLInputFactory factory = XMLInputFactory.newFactory(); //se crea el parsers/lectores de XML
+            InputStream is = getClass().getResourceAsStream("/com/java/tp/data/responsables.xml"); //indica la ruta del archivo
+            //caso de que no exista el archivo
             if (is == null) {
                 System.out.println("Recurso no encontrado: com/java/tp/data/responsables.xml");
+                //No debería ser una excepion???
                 return;
             }
             XMLStreamReader reader = factory.createXMLStreamReader(is);
+            //analiza errores de coherencia en el XML
             while (reader.hasNext()) { //while !eof
                 if (reader.isStartElement() && reader.getLocalName().equals("responsable")) {
                     try {
@@ -78,8 +81,8 @@ public class DataController {
         }
     }
 
-    private void deserealizaDestinos() {
-        TreeMap<String, Place> des = Agency.getInstancia().getDestinos();
+    private void deserealizaDestinos(Agency agency) {
+        TreeMap<String, Place> des = agency.getDestinos();
         try {
             JAXBContext contexto = JAXBContext.newInstance(Place.class);
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
@@ -118,8 +121,8 @@ public class DataController {
         }
     }
 
-    private void deserializaVehiculos() {
-        HashMap<String, Vehicles> veh = Agency.getInstancia().getVehiculos();
+    private void deserializaVehiculos(Agency agency) {
+        HashMap<String, Vehicles> veh = agency.getVehiculos();
         try {
             JAXBContext contexto = JAXBContext.newInstance(Car.class, MiniBus.class, BusSC.class, BusCC.class);
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
@@ -202,8 +205,8 @@ public class DataController {
         }
     }
 
-    public void deserializaViajes(){
-        HashMap<String, Travel> via = Agency.getInstancia().getViajes();
+    public void deserializaViajes(Agency agency){
+        HashMap<String, Travel> via = agency.getViajes();
         try {
             JAXBContext contexto = JAXBContext.newInstance(LongDis.class,ShortDis.class);
             Unmarshaller unmarshaller = contexto.createUnmarshaller();
@@ -227,8 +230,8 @@ public class DataController {
                         continue;
                     }
                     try {
-                        v.setId(Agency.getInstancia().creaIdViaje(v.getIdDestino()));
-                        v.setEstado(v.actualizaEstadoViaje(v.getIdDestino()));
+                        v.setId(agency.creaIdViaje(v.getIdDestino()));
+                        v.setEstado(v.actualizaEstadoViaje(v.getIdDestino(), agency.getDestinos()));
                         via.put(v.getId(), v);
                     } catch (Exception e) {
                         System.out.println("Viaje inválido al asignar id/estado: " + e.getMessage());

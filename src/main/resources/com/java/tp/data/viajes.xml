@@ -1,13 +1,13 @@
 <viajes>
     <cortaDis>
     <idDestino>Italia</idDestino>
-    <kmRec>20.0</kmRec>
+    <kmRec>50.0</kmRec>
     <patVehiculo>AS241LO</patVehiculo>
     <cPasajeros>2</cPasajeros>
 </cortaDis>
     <cortaDis>
     <idDestino>Italia</idDestino>
-    <kmRec>50.0</kmRec>
+    <kmRec>20.0</kmRec>
     <patVehiculo>AS241LO</patVehiculo>
     <cPasajeros>2</cPasajeros>
 </cortaDis>
@@ -35,14 +35,14 @@
 </largaDis>
     <largaDis>
     <idDestino>Alemania</idDestino>
-    <kmRec>40.0</kmRec>
+    <kmRec>10.0</kmRec>
     <patVehiculo>AB012AA</patVehiculo>
     <cPasajeros>6</cPasajeros>
     <dnisPerResponsables>12345678</dnisPerResponsables>
 </largaDis>
     <largaDis>
     <idDestino>Alemania</idDestino>
-    <kmRec>10.0</kmRec>
+    <kmRec>40.0</kmRec>
     <patVehiculo>AB012AA</patVehiculo>
     <cPasajeros>6</cPasajeros>
     <dnisPerResponsables>12345678</dnisPerResponsables>

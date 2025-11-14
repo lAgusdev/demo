@@ -50,10 +50,16 @@ public  abstract class Travel {
     public void setIdDestino(String idDestino) {this.idDestino = idDestino;}
     public void setKmRec(float kmRec) {this.kmRec = kmRec;}
     public void setPatVehiculo(String patVehiculo) {this.patVehiculo = patVehiculo;}
-    //
+
+    // Sobrecarga para usar cuando Agency ya está inicializado
     public TravelStatus actualizaEstadoViaje(String idDestino){
-        TreeMap<String,Place> aux= Agency.getInstancia().getDestinos();//traigo el hashmap
-        Place destinoaux=aux.get(idDestino);
+        TreeMap<String,Place> aux= Agency.getInstancia().getDestinos();
+        return actualizaEstadoViaje(idDestino, aux);
+    }
+    
+    // Versión que recibe destinos como parámetro (para usar durante deserialización)
+    public TravelStatus actualizaEstadoViaje(String idDestino, TreeMap<String,Place> destinos){
+        Place destinoaux=destinos.get(idDestino);
         if(destinoaux.getKm()== kmRec){
             return TravelStatus.FINALIZADO;
         } else if (kmRec==0) {

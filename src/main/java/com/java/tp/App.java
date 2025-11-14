@@ -8,7 +8,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.io.IOException; 
 import com.java.tp.agency.Agency;
-import com.java.tp.agency.dataController.DataController;
 
 /**
  * @author Franco Di Meglio
@@ -29,16 +28,6 @@ public class App extends Application {
     }
 
     @Override
-    public void init() {
-        // Cargar datos antes de que se inicialice la UI (se ejecuta en el launcher thread)
-        try {
-            new DataController().iniciaxml();
-        } catch (Exception e) {
-            System.out.println("Error al cargar datos en init(): " + e.getMessage());
-        }
-    }
-    
-    @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("mainMenu"), 1080, 720);
         java.io.InputStream iconIs = App.class.getResourceAsStream("/com/java/tp/img/icon.png");
@@ -50,8 +39,22 @@ public class App extends Application {
         }
         stage.setTitle("Agencia de Viajes");
         stage.setMaximized(true);
-        scene.getStylesheets().add(App.class.getResource("/com/java/tp/styles/styles.css").toExternalForm());
+        
+        // Intentar cargar el CSS solo si existe
+        java.net.URL cssUrl = App.class.getResource("/com/java/tp/styles/styles.css");
+        if (cssUrl != null) {
+            scene.getStylesheets().add(cssUrl.toExternalForm());
+        } else {
+            System.out.println("CSS resource not found: /com/java/tp/styles/styles.css");
+        }
+        
         stage.setScene(scene);
+        stage.setOnCloseRequest(event -> {
+            System.out.println("Guardando viajes antes de cerrar...");
+            com.java.tp.agency.dataController.DataController dc = new com.java.tp.agency.dataController.DataController();
+            dc.serializaViajes();
+            System.out.println("Viajes guardados exitosamente.");
+        });
         stage.show();
     }
 

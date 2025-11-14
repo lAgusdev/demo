@@ -1,5 +1,6 @@
 package com.java.tp.agency;
 import com.java.tp.agency.travels.*;
+import com.java.tp.agency.dataController.DataController;
 import com.java.tp.agency.enums.Unoccupied;
 import com.java.tp.agency.places.Place;
 import com.java.tp.agency.responsables.*;
@@ -17,6 +18,11 @@ public class Agency {
 
     private Agency() {
         System.out.println("Se creo la instancia Singleton de agencia");
+        try {
+            new DataController().iniciaxml(this);
+        } catch (Exception e) {
+            System.out.println("Error al cargar datos en init(): " + e.getMessage());
+        }
     }
 
     public static Agency getInstancia(){
@@ -119,12 +125,20 @@ public class Agency {
         }
     }
 
-public String creaIdViaje(String destino){
+    public String creaIdViaje(String destino){
     // Ensure we have a counter for this destination. If absent, start at 1.
-    int contador = cantViajes.getOrDefault(destino, 1);
-    String id = destino + "-" + contador;
-    // Store next counter value
-    cantViajes.put(destino, contador + 1);
-    return id;
+        int contador = cantViajes.getOrDefault(destino, 1);
+        String id = destino + "-" + contador;
+        // Store next counter value
+        cantViajes.put(destino, contador + 1);
+        return id;
+    }
+
+    public void saveTravelsData() {
+        try {
+            new DataController().serializaViajes();
+        } catch (Exception e) {
+            System.out.println("Error al guardar datos de viajes: " + e.getMessage());
+        }
     }
 }

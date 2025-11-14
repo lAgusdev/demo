@@ -90,7 +90,7 @@ public class TopPlacesController {
         String nombreArchivo = "Reporte_Destinos_" + timestamp + ".txt";
         
         // 3. Definir la ruta del archivo (se guardará en el directorio de ejecución del programa)
-        Path rutaArchivo = Path.of(nombreArchivo);
+        Path rutaArchivo = Path.of("reports/" + nombreArchivo);
         
         try {
             // Escribir todas las líneas en el archivo. Esto lo crea si no existe.

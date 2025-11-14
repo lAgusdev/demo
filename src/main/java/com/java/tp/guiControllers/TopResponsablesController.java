@@ -91,7 +91,7 @@ public class TopResponsablesController {
         String nombreArchivo = "Reporte_Responsables_" + timestamp + ".txt";
         
         // 3. Definir la ruta del archivo
-        Path rutaArchivo = Path.of(nombreArchivo);
+        Path rutaArchivo = Path.of("reports/" + nombreArchivo);
         
         try {
             // Escribir todas las líneas en el archivo (creándolo si no existe)

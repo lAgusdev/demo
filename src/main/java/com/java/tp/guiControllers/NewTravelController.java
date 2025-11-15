@@ -5,6 +5,8 @@ import javafx.scene.control.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.HBox;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -14,8 +16,10 @@ import com.java.tp.agency.places.Place;
 import com.java.tp.agency.dataController.DataController;
 import com.java.tp.agency.responsables.Responsable;
 import com.java.tp.agency.vehicles.Vehicles;
+import com.java.tp.agency.travels.Travel;
 import com.java.tp.App;
 import java.util.TreeSet;
+import java.util.HashMap;
 public class NewTravelController {
 
     // Componentes de la UI inyectados desde FXML
@@ -33,6 +37,7 @@ public class NewTravelController {
     @FXML private Label responsablesSectionLabel; 
 
     @FXML private final static Map<String, Integer> DISTANCIAS;
+    @FXML private Label costoViajeLabel;
 
     private final static int UMBRAL_LARGA_DISTANCIA = 100;
 
@@ -69,6 +74,73 @@ public class NewTravelController {
 
         return distanciasMap;
     }
+
+private static HashMap<String, Vehicles> transportes; 
+private static HashMap<String, Responsable> responsABordo;
+private static HashMap<String,Travel> viajes; 
+static {
+    // Inicialización estática
+    transportes = Agency.getInstancia().getVehiculos(); // Los llamaste 'transporetes' en tu ejemplo, lo corregí a 'transportes'
+    responsABordo = Agency.getInstancia().getResponsables();
+    viajes = Agency.getInstancia().getViajes();
+}
+
+
+private double calcularCostoViaje() {
+    String patenteVehiculo = vehiculoComboBox.getValue();
+    String destinoSeleccionado = destinoComboBox.getValue();
+    int pasajeros = pasajerosSpinner.getValue();
+
+    if (patenteVehiculo == null || destinoSeleccionado == null || !DISTANCIAS.containsKey(destinoSeleccionado)) {
+        return 0.0;
+    } 
+    int kmDelViaje = DISTANCIAS.get(destinoSeleccionado); 
+    double costoTotal = 0.0;
+    try {
+        Vehicles vehiculo = transportes.get(patenteVehiculo);         
+        if (vehiculo != null) {
+            int capacidadVehiculo = vehiculo.getCapacidad();
+            int cantCamas = 0;             
+            // --- Lógica de cálculo de camas (solo para Coche Cama) ---
+            if (capacidadVehiculo == CAPACIDAD_COCHECAMA) { 
+                int CAMAS_DISPONIBLES = 26; // 32 - 6 asientos normales
+                cantCamas = Math.min(pasajeros, CAMAS_DISPONIBLES);
+            } else {
+                cantCamas = 0;
+            }
+            costoTotal += vehiculo.calculaCosto((float) kmDelViaje, pasajeros, cantCamas);
+        }
+    } catch (Exception e) {
+        System.err.println("Error al obtener datos o calcular costo del vehículo: " + e.getMessage());
+    }
+    if (responsablesHBox.isManaged()) { 
+        for (String responsableString : seleccionados) {
+            try {
+                String dni = responsableString.substring(responsableString.indexOf('(') + 1, responsableString.indexOf(')'));
+                Responsable responsable = responsABordo.get(dni);
+                
+                if (responsable != null) {
+                    costoTotal += responsable.getSalario(); 
+                }
+            } catch (Exception e) {
+                System.err.println("Error al obtener datos o sumar salario de responsable: " + e.getMessage());
+            }
+        }
+    }
+    return costoTotal;
+}
+
+
+private void actualizarCostoLabel() {
+    try {
+        double costo = calcularCostoViaje();
+        String costoFormateado = String.format("$ %.2f", costo);
+        costoViajeLabel.setText(costoFormateado);
+    } catch (Exception e) {
+        costoViajeLabel.setText("ERROR");
+    }
+}
+
 
 
     @FXML
@@ -108,7 +180,7 @@ public class NewTravelController {
 
         // 2. Iterar y clasificar por capacidad
         for (Vehicles vehiculo : vehiculos) {
-            String patente = vehiculo.getPatente(); // Necesitas getPatente()
+            String patente = vehiculo.getPatente();
             int capacidad = vehiculo.getCapacidad(); // Necesitas getCapacidad()
 
             // Clasificación por Larga Distancia
@@ -126,22 +198,41 @@ public class NewTravelController {
         VEHICULOS_LARGA = largaTemp;
         VEHICULOS_CORTA = cortaTemp;
     }
-    @FXML
-    private List<String> obtenerResponsablesDisponibles() {
+
+@FXML
+private List<String> obtenerResponsablesDisponibles() {
+    
+
+    java.util.Collection<Responsable> todosLosResponsables = responsABordo.values();
         
-        // 1. Obtener la colección de objetos Responsable del HashMap (usando .values()).
-        java.util.Collection<Responsable> responsables = 
-            Agency.getInstancia().ResponsablesDisponibles().values();
-        
-        // 2. Usar Streams para mapear cada objeto a un String formateado y colectarlos en una List<String>.
-        List<String> listaEstandar = responsables.stream()
-            // Mapea cada objeto Responsable a un String "Nombre (DNI)"
-            .map(r -> String.format("%s (%s)", r.getNombre(), r.getDni()))
-            // Colecta los Strings resultantes en una List<String>
-            .collect(Collectors.toList());
-        
-        return listaEstandar;
+
+    java.util.Set<String> responsablesOcupadosDni = new java.util.HashSet<>();
+    
+    for (Travel viaje : viajes.values()) { // <-- CAMBIO CLAVE AQUÍ
+        try {
+
+            if ("ACTIVO".equals(viaje.getEstado())) { 
+                java.util.TreeSet<String> dnisDelViaje = viaje.getPerResponsables(); 
+                responsablesOcupadosDni.addAll(dnisDelViaje);
+            }
+        } catch (Exception e) {
+            System.err.println("Error procesando estado del viaje: " + e.getMessage());
+        }
     }
+    
+    List<String> listaDisponibles = new java.util.ArrayList<>();
+    
+    for (Responsable responsable : todosLosResponsables) {
+        String dni = responsable.getDni();
+        
+    
+        if (!responsablesOcupadosDni.contains(dni)) {
+            listaDisponibles.add(String.format("%s (%s)", responsable.getNombre(), dni));
+        }
+    }
+    
+    return listaDisponibles;
+}
     @FXML
     public void initialize() {
         // --- CONFIGURACIÓN DE DESTINO ---
@@ -149,10 +240,11 @@ public class NewTravelController {
         destinoComboBox.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> actualizarOpcionesDeViaje(newValue)
         );
+        actualizarCostoLabel();
 
         // --- CONFIGURACIÓN DE PASAJEROS ---
         pasajerosSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
-        
+        actualizarCostoLabel();
         // --- CONFIGURACIÓN DE KILÓMETROS (CON EDICIÓN POR TECLADO) ---
         SpinnerValueFactory.IntegerSpinnerValueFactory factory = 
             new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10000, 0);
@@ -167,6 +259,7 @@ public class NewTravelController {
                     int value = Integer.parseInt(newValue);
                     if (value >= factory.getMin() && value <= factory.getMax()) {
                         factory.setValue(value);
+                        actualizarCostoLabel();
                     } else {
                         // Si está fuera de rango, revertimos o limpiamos
                         if (!newValue.isEmpty()) kmHechosSpinner.getEditor().setText(oldValue);
@@ -186,7 +279,7 @@ public class NewTravelController {
         // --- CONFIGURACIÓN DE VEHÍCULOS (ComboBox) ---
         vehiculoComboBox.setItems(VEHICULOS_CORTA);
         vehiculoComboBox.getSelectionModel().select("Auto");
-        
+        actualizarCostoLabel();
         
         // --- CONFIGURACIÓN DE RESPONSABLES ---
         List<String> responsablesEstandar = obtenerResponsablesDisponibles();
@@ -196,7 +289,7 @@ public class NewTravelController {
         responsablesSeleccionadosListView.setItems(seleccionados);
         responsablesDisponiblesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         responsablesSeleccionadosListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
+        actualizarCostoLabel();
         // Ocultar la sección de responsables al inicio
         responsablesHBox.setVisible(false);
         responsablesHBox.setManaged(false);
@@ -252,6 +345,7 @@ public class NewTravelController {
             seleccionados.addAll(selected);
             disponibles.removeAll(selected);
             responsablesDisponiblesListView.getSelectionModel().clearSelection();
+            actualizarCostoLabel();
         }
     }
 
@@ -262,6 +356,7 @@ public class NewTravelController {
             disponibles.addAll(selected);
             seleccionados.removeAll(selected);
             responsablesSeleccionadosListView.getSelectionModel().clearSelection();
+            actualizarCostoLabel();
         }
     }
 

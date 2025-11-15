@@ -5,13 +5,15 @@ import java.nio.file.Files; // Para manejo de archivos
 import java.nio.file.Path; // Para definir la ruta
 import java.time.LocalDateTime; // Para el timestamp
 import java.time.format.DateTimeFormatter; // Para formatear el timestamp
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import com.java.tp.App;
 import com.java.tp.agency.Agency;
 import com.java.tp.agency.places.Place;
+import com.java.tp.agency.travels.Travel;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,35 +22,56 @@ public class TopPlacesController {
 
     @FXML
     private javafx.scene.control.ListView<String> list;
+    
+    @FXML
+    private javafx.scene.control.Label totalPlaces;
 
     /**
-     * Método auxiliar para obtener la lista de destinos formateada, ordenada
-     * y con el número de puesto (ranking) al inicio.
-     * @return Una lista de Strings con los destinos formateados ("#Puesto - ID - KM km").
+     * Método auxiliar para obtener la lista de destinos formateada.
+     * @return Una lista de Strings con los destinos formateados ("ID - KM km").
      */
     private List<String> getDestinosFormateados() {
         TreeMap<String, Place> destinos = Agency.getInstancia().getDestinos();
-        
+        HashMap<String, Travel> viajes = Agency.getInstancia().getViajes();
+
         if (destinos == null || destinos.isEmpty()) {
             return List.of("No se pudieron cargar los destinos");
-        } else {
-            // 1. Obtener la lista de destinos formateada y ordenada (base)
-            List<String> destinosOrdenados = destinos.values().stream()
-                .map(p -> p.getId() + " - " + p.getKm() + " km")
-                .sorted() 
-                .collect(Collectors.toList());
-
-            List<String> listaConPuesto = new ArrayList<>();
+        }
+        
+        if (viajes == null || viajes.isEmpty()) {
+            return List.of("No hay viajes cargados para evaluar destinos");
+        }
+        
+        // HashMap para acumular km por destino
+        HashMap<String, Float> kmPorDestino = new HashMap<>();
+        
+        // Recorrer todos los destinos del TreeMap
+        for (String destinoId : destinos.keySet()) {
+            float kmAcumulados = 0;
             
-            // 2. Iterar sobre la lista ordenada para añadir el número de puesto (ranking)
-            for (int i = 0; i < destinosOrdenados.size(); i++) {
-                // Se añade el número de posición (i + 1). Ejemplo: "#1 - Buenos Aires - 1200 km"
-                String linea = String.format("#%d - %s", (i + 1), destinosOrdenados.get(i)); 
-                listaConPuesto.add(linea);
+            // Recorrer todos los viajes
+            for (Travel viaje : viajes.values()) {
+                String viajeId = viaje.getId(); // Ej: "destino-1"
+                
+                // Extraer la parte del destino del ID del viaje (antes del guion)
+                String destinoDelViaje = viajeId.substring(0, viajeId.lastIndexOf('-'));
+                
+                // Si el viaje corresponde a este destino, sumar los km
+                if (destinoDelViaje.equals(destinoId)) {
+                    kmAcumulados += viaje.getKmRec();
+                }
             }
             
-            return listaConPuesto;
+            // Almacenar el acumulado para este destino
+            kmPorDestino.put(destinoId, kmAcumulados);
         }
+        
+        // Convertir a lista sin ordenar
+        List<String> destinosFormateados = kmPorDestino.entrySet().stream()
+            .map(entry -> entry.getKey() + " - " + String.format("$ %.2f", entry.getValue()))
+            .collect(Collectors.toList());
+        
+        return destinosFormateados;
     }
 
     @FXML
@@ -57,11 +80,23 @@ public class TopPlacesController {
             List<String> lista = getDestinosFormateados();
             ObservableList<String> items = FXCollections.observableArrayList(lista);
             list.setItems(items);
+            
+            // Calcular el total de km recorridos
+            HashMap<String, Travel> viajes = Agency.getInstancia().getViajes();
+            float totalKm = 0;
+            if (viajes != null && !viajes.isEmpty()) {
+                for (Travel viaje : viajes.values()) {
+                    totalKm += viaje.getKmRec();
+                }
+            }
+            totalPlaces.setText(String.format("%.2f", totalKm));
+            
         } catch (Exception e) {
             ObservableList<String> items = FXCollections.observableArrayList(
                 List.of("No se pudieron cargar los destinos")
             );
             list.setItems(items);
+            totalPlaces.setText("0.00");
             System.out.println("No se pudieron cargar los destinos: " + e.getMessage());
         }
     }

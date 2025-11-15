@@ -47,13 +47,6 @@
                     </VBox>
                 </children>
             </HBox>
-            
-            <HBox alignment="CENTER_LEFT" spacing="5.0" maxWidth="Infinity">
-                <children>
-                    <Label text="Costo del viaje: " style="-fx-font-weight: bold;"/>
-                    <Label fx:id="costoViajeLabel" text="-- Clic para calcular --" style="-fx-text-fill: green; -fx-font-weight: bold; -fx-font-size: 14px;"/>
-                </children>
-            </HBox>
             <Button text="Crear Viaje" onAction="#crearViaje" maxWidth="Infinity"/>
             <Button fx:id="MainMenuButton" text="Volver" onAction="#switchToMainMenu" maxWidth="Infinity"/>
         </children>

@@ -181,7 +181,7 @@ private void actualizarCostoLabel() {
         // 2. Iterar y clasificar por capacidad
         for (Vehicles vehiculo : vehiculos) {
             String patente = vehiculo.getPatente();
-            int capacidad = vehiculo.getCapacidad(); // Necesitas getCapacidad()
+            int capacidad = vehiculo.getCapacidad(); // Necesitas getCapacidad() para determinar el tipo de vehículo
 
             // Clasificación por Larga Distancia
             if (CAPACIDADES_LARGA.contains(capacidad)) {

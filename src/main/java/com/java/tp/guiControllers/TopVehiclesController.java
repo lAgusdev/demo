@@ -8,28 +8,41 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 import com.java.tp.App;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import com.java.tp.agency.Agency;
+import com.java.tp.agency.travels.Travel;
 import com.java.tp.agency.vehicles.Vehicles;
 
 public class TopVehiclesController {
 
     @FXML
     private javafx.scene.control.ListView<String> list;
+    
+    @FXML
+    private javafx.scene.control.Label totalVehicles;
 
-    private List<String> getVehiculosFormateados() {
-        HashMap<String, Vehicles> veh = Agency.getInstancia().getVehiculos();
-        
-        if (veh == null || veh.isEmpty()) {
-            return List.of("No hay vehículos cargados");
-        } else {
-            int acumBusCC = 0, acumBusSC = 0, acumMiniBus = 0, acumCar = 0;
-            for (Vehicles v : veh.values()) {
-                switch (v.getCapacidad()) {
+    @FXML
+    private void initialize() {
+        try {
+            HashMap<String, Travel> viajes = Agency.getInstancia().getViajes();
+            HashMap<String, Vehicles> vehiculos = Agency.getInstancia().getVehiculos();
+            
+            if (viajes == null || viajes.isEmpty() || vehiculos == null || vehiculos.isEmpty()) {
+                throw new Exception("No hay datos cargados");
+            }
+            
+            float acumBusCC = 0, acumBusSC = 0, acumMiniBus = 0, acumCar = 0;
+            
+            for (Travel v : viajes.values()) {
+                // Obtener el vehículo del viaje usando la patente como clave del HashMap
+                Vehicles vehiculoDelViaje = vehiculos.get(v.getPatVehiculo());
+                
+                int pasajeros = vehiculoDelViaje.getCapacidad();
+                
+                switch (pasajeros) {
                     case 32:
                         acumBusCC += 1;
                         break;
@@ -44,38 +57,78 @@ public class TopVehiclesController {
                         break;
                 }
             }
-            List<String> vehicleReport = new ArrayList<>();
-            vehicleReport.add("Colectivo coche-cama: " + acumBusCC);
-            vehicleReport.add("Colectivo semi-cama: " + acumBusSC);
-            vehicleReport.add("Combi: " + acumMiniBus);
-            vehicleReport.add("Auto: " + acumCar);
-            return vehicleReport;
-        }
-    }
-
-    @FXML
-    private void initialize() {
-        // Obtener vehículos desde la agencia
-        try {
-            List<String> lista = getVehiculosFormateados();
             
-            // Si el resultado es la lista de error, se usa una ObservableList temporal para mostrar el error.
-            if (lista.size() == 1 && lista.get(0).equals("No hay vehículos cargados")) {
-                 ObservableList<String> items = FXCollections.observableArrayList(
-                    List.of("No se pudieron cargar los vehículos")
-                );
-                list.setItems(items);
-            } else {
-                ObservableList<String> items = FXCollections.observableArrayList(lista);
-                list.setItems(items);
-            }
+            List<String> vehicleReport = new ArrayList<>();
+            vehicleReport.add("Auto: $" + acumCar);
+            vehicleReport.add("Combi: $" + acumMiniBus);
+            vehicleReport.add("Colectivo semi-cama: $" + acumBusSC);
+            vehicleReport.add("Colectivo coche-cama: $" + acumBusCC);
+            
+            float total = acumCar + acumMiniBus + acumBusSC + acumBusCC;
+            totalVehicles.setText(String.valueOf("$ " + total));
+            
+            ObservableList<String> items = FXCollections.observableArrayList(vehicleReport);
+            list.setItems(items);
+            
         } catch (Exception e) {
-            // en caso de error, usar la lista por defecto
+            // En caso de error, mostrar mensaje de error
             ObservableList<String> items = FXCollections.observableArrayList(
                 List.of("No se pudieron cargar los vehículos")
             );
             list.setItems(items);
-            System.out.println("No se pudieron cargar los vehículos: " + e.getMessage());
+            totalVehicles.setText("0");
+            System.out.println("Error al cargar vehículos: " + e.getMessage());
+        }
+    }
+    
+
+
+    private List<String> getVehiculosFormateados() {
+        try {
+            HashMap<String, Travel> viajes = Agency.getInstancia().getViajes();
+            HashMap<String, Vehicles> vehiculos = Agency.getInstancia().getVehiculos();
+            
+            if (viajes == null || viajes.isEmpty() || vehiculos == null || vehiculos.isEmpty()) {
+                return List.of("No se pudieron cargar los vehículos");
+            }
+            
+            float acumBusCC = 0, acumBusSC = 0, acumMiniBus = 0, acumCar = 0;
+            
+            for (Travel v : viajes.values()) {
+                Vehicles vehiculoDelViaje = vehiculos.get(v.getPatVehiculo());
+                
+                if (vehiculoDelViaje == null) {
+                    continue;
+                }
+                
+                int pasajeros = vehiculoDelViaje.getCapacidad();
+                
+                switch (pasajeros) {
+                    case 32:
+                        acumBusCC += 1;
+                        break;
+                    case 40:
+                        acumBusSC += 1;
+                        break;
+                    case 16:
+                        acumMiniBus += 1;
+                        break;
+                    case 4:
+                        acumCar += 1;
+                        break;
+                }
+            }
+            
+            List<String> vehicleReport = new ArrayList<>();
+            vehicleReport.add("Auto: $" + acumCar);
+            vehicleReport.add("Combi: $" + acumMiniBus);
+            vehicleReport.add("Colectivo semi-cama: $" + acumBusSC);
+            vehicleReport.add("Colectivo coche-cama: $" + acumBusCC);
+            
+            return vehicleReport;
+            
+        } catch (Exception e) {
+            return List.of("No se pudieron cargar los vehículos");
         }
     }
 

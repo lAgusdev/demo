@@ -37,13 +37,11 @@ public class NewTravelController {
     @FXML private Label responsablesSectionLabel; 
 
     @FXML private final static Map<String, Integer> DISTANCIAS;
-    @FXML private Label costoViajeLabel;
+    @FXML private Label totalValue;
 
     private final static int UMBRAL_LARGA_DISTANCIA = 100;
 
-    private ObservableList<String> disponibles = FXCollections.observableArrayList(
-        "Responsable A", "Responsable B", "Responsable C", "Responsable D"
-    );
+    private ObservableList<String> disponibles ;
     private ObservableList<String> seleccionados = FXCollections.observableArrayList();
 
     static {
@@ -85,59 +83,124 @@ static {
     viajes = Agency.getInstancia().getViajes();
 }
 
-
 private double calcularCostoViaje() {
-    String patenteVehiculo = vehiculoComboBox.getValue();
-    String destinoSeleccionado = destinoComboBox.getValue();
-    int pasajeros = pasajerosSpinner.getValue();
-
-    if (patenteVehiculo == null || destinoSeleccionado == null || !DISTANCIAS.containsKey(destinoSeleccionado)) {
+    String vehiculoSeleccionado = vehiculoComboBox.getValue();
+    String destinoSeleccionado = destinoComboBox.getValue(); 
+    
+    if (vehiculoComboBox == null || destinoComboBox == null || pasajerosSpinner == null || kmHechosSpinner == null) {
         return 0.0;
-    } 
-    int kmDelViaje = DISTANCIAS.get(destinoSeleccionado); 
-    double costoTotal = 0.0;
-    try {
-        Vehicles vehiculo = transportes.get(patenteVehiculo);         
-        if (vehiculo != null) {
-            int capacidadVehiculo = vehiculo.getCapacidad();
-            int cantCamas = 0;             
-            // --- Lógica de cálculo de camas (solo para Coche Cama) ---
-            if (capacidadVehiculo == CAPACIDAD_COCHECAMA) { 
-                int CAMAS_DISPONIBLES = 26; // 32 - 6 asientos normales
-                cantCamas = Math.min(pasajeros, CAMAS_DISPONIBLES);
-            } else {
-                cantCamas = 0;
-            }
-            costoTotal += vehiculo.calculaCosto((float) kmDelViaje, pasajeros, cantCamas);
-        }
-    } catch (Exception e) {
-        System.err.println("Error al obtener datos o calcular costo del vehículo: " + e.getMessage());
     }
-    if (responsablesHBox.isManaged()) { 
+    
+    int pasajeros = pasajerosSpinner.getValue();
+    
+    if (vehiculoSeleccionado == null || destinoSeleccionado == null || !DISTANCIAS.containsKey(destinoSeleccionado)) {
+        return 0.0;
+    }
+    
+    int kmDelViaje = DISTANCIAS.get(destinoSeleccionado);
+    
+    // Extraer la patente del formato "Tipo: Patente"
+    String patenteVehiculo = vehiculoSeleccionado;
+    if (vehiculoSeleccionado.contains(": ")) {
+        patenteVehiculo = vehiculoSeleccionado.substring(vehiculoSeleccionado.indexOf(": ") + 2);
+    }
+    
+    // 1. Obtener OBJETOS DE NEGOCIO
+    Vehicles vehiculo = transportes.get(patenteVehiculo);
+    Place destino = Agency.getInstancia().getDestinos().get(destinoSeleccionado); 
+    
+    // Si falta algún objeto, retorna 0.0
+    if (vehiculo == null || destino == null) {
+        return 0.0;
+    }
+    
+    // 2. Determinar el TIPO DE VIAJE y Cantidad de Camas (Lógica de UI)
+    boolean esLargaDistancia = kmDelViaje >= UMBRAL_LARGA_DISTANCIA;
+
+    int cantCamas = 0;
+    if (vehiculo.getCapacidad() == CAPACIDAD_COCHECAMA) { 
+        final int CAMAS_DISPONIBLES = 26;
+        final int ASIENTOS_COMUNES_MAX = 6;
+        
+        // Calcular camas: máximo 26, pero asegurando que queden máximo 6 asientos comunes
+        cantCamas = Math.min(pasajeros, CAMAS_DISPONIBLES);
+        
+        // Si los asientos comunes superan 6, ajustar las camas
+        int asientosComunes = pasajeros - cantCamas;
+        if (asientosComunes > ASIENTOS_COMUNES_MAX) {
+            // Aumentar las camas para no exceder los 6 asientos comunes
+            cantCamas = pasajeros - ASIENTOS_COMUNES_MAX;
+        }
+    }
+
+    // 3. Obtener el MAPA DE RESPONSABLES SELECCIONADOS
+    // Filtrar responsABordo para obtener solo los seleccionados en la UI
+    HashMap<String, Responsable> responsablesAContar = new HashMap<>();
+    if (esLargaDistancia) {
         for (String responsableString : seleccionados) {
-            try {
-                String dni = responsableString.substring(responsableString.indexOf('(') + 1, responsableString.indexOf(')'));
-                Responsable responsable = responsABordo.get(dni);
-                
-                if (responsable != null) {
-                    costoTotal += responsable.getSalario(); 
-                }
-            } catch (Exception e) {
-                System.err.println("Error al obtener datos o sumar salario de responsable: " + e.getMessage());
+            // Extraer el DNI: "Nombre (DNI)" -> DNI
+            String dni = responsableString.substring(responsableString.indexOf('(') + 1, responsableString.indexOf(')'));
+            Responsable r = responsABordo.get(dni);
+            if (r != null) {
+                responsablesAContar.put(dni, r);
             }
         }
     }
-    return costoTotal;
+    
+    // 4. Crear una INSTANCIA TEMPORAL de Travel y llamar al método
+    // Se necesita una subclase concreta (LongDis o ShortDis)
+    Travel viajeTemporal;
+
+    if (esLargaDistancia) {
+        // Debes implementar el constructor apropiado en LongDis
+        // Asumo que LongDis tiene un constructor y usa la lista de responsables
+        // y que el constructor ya está definido.
+        // Si no tienes un constructor, usa la inicialización de Travel:
+        // viajeTemporal = new LongDis(null, patenteVehiculo, destinoSeleccionado, pasajeros, (float) kmDelViaje);
+        
+        // **OPCIÓN ALTERNATIVA Y MÁS SEGURA (Si no quieres crear un viaje real):**
+        // Llama directamente al método devuelveValorCalculado desde una instancia de LongDis/ShortDis.
+        // **Reemplaza `LongDis` y `ShortDis` con los nombres de tus clases concretas.**
+        viajeTemporal = new com.java.tp.agency.travels.LongDis(); 
+        
+    } else {
+        viajeTemporal = new com.java.tp.agency.travels.ShortDis();
+    }
+    
+    try {
+        // [USANDO Travel] Llama al método abstracto para obtener el costo
+        // El cálculo de sueldo del responsable debe estar dentro del método en LongDis.
+        double costo = viajeTemporal.devuelveValorCalculado(
+            vehiculo, 
+            destino, 
+            responsablesAContar, // Responsables seleccionados
+            pasajeros, 
+            cantCamas
+        );
+        return costo;
+        
+    } catch (Exception e) {
+        System.err.println("Error al calcular costo en el objeto Travel: " + e.getMessage());
+        return 0.0;
+    }
 }
 
 
 private void actualizarCostoLabel() {
+    // Verificar que el label existe antes de usarlo
+    if (totalValue == null) {
+        return;
+    }
+    
     try {
-        double costo = calcularCostoViaje();
+        // [MODIFICADO] Llama a la función que calcula el costo
+        double costo = calcularCostoViaje(); 
+        
         String costoFormateado = String.format("$ %.2f", costo);
-        costoViajeLabel.setText(costoFormateado);
+        totalValue.setText(costoFormateado);
     } catch (Exception e) {
-        costoViajeLabel.setText("ERROR");
+        totalValue.setText("ERROR");
+        System.err.println("Error al actualizar label de costo: " + e.getMessage());
     }
 }
 
@@ -180,8 +243,26 @@ private void actualizarCostoLabel() {
 
         // 2. Iterar y clasificar por capacidad
         for (Vehicles vehiculo : vehiculos) {
-            String patente = vehiculo.getPatente();
-            int capacidad = vehiculo.getCapacidad(); // Necesitas getCapacidad() para determinar el tipo de vehículo
+            int capacidad = vehiculo.getCapacidad();
+            String patente;
+            
+            switch (capacidad) {
+                case CAPACIDAD_COCHECAMA:
+                    patente = ("Colectivo Coche Cama: " + vehiculo.getPatente() );
+                    break;
+                case CAPACIDAD_SEMICAMA:
+                    patente = ("Colectivo Semi Cama: " + vehiculo.getPatente() );
+                    break;
+                case CAPACIDAD_MINIBUS:
+                    patente = ("Combi: " + vehiculo.getPatente() );
+                    break;
+                case CAPACIDAD_AUTO:
+                    patente = ("Auto: " + vehiculo.getPatente() );
+                    break;
+                default:
+                    patente = vehiculo.getPatente();
+                    break;
+            }
 
             // Clasificación por Larga Distancia
             if (CAPACIDADES_LARGA.contains(capacidad)) {
@@ -238,13 +319,15 @@ private List<String> obtenerResponsablesDisponibles() {
         // --- CONFIGURACIÓN DE DESTINO ---
         destinoComboBox.setItems(FXCollections.observableArrayList(DISTANCIAS.keySet()));
         destinoComboBox.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> actualizarOpcionesDeViaje(newValue)
+            (observable, oldValue, newValue) -> {
+                actualizarOpcionesDeViaje(newValue);
+                actualizarCostoLabel();
+            }
         );
-        actualizarCostoLabel();
 
         // --- CONFIGURACIÓN DE PASAJEROS ---
         pasajerosSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
-        actualizarCostoLabel();
+        pasajerosSpinner.valueProperty().addListener((obs, oldVal, newVal) -> actualizarCostoLabel());
         // --- CONFIGURACIÓN DE KILÓMETROS (CON EDICIÓN POR TECLADO) ---
         SpinnerValueFactory.IntegerSpinnerValueFactory factory = 
             new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10000, 0);
@@ -279,7 +362,7 @@ private List<String> obtenerResponsablesDisponibles() {
         // --- CONFIGURACIÓN DE VEHÍCULOS (ComboBox) ---
         vehiculoComboBox.setItems(VEHICULOS_CORTA);
         vehiculoComboBox.getSelectionModel().select("Auto");
-        actualizarCostoLabel();
+        vehiculoComboBox.valueProperty().addListener((obs, oldVal, newVal) -> actualizarCostoLabel());
         
         // --- CONFIGURACIÓN DE RESPONSABLES ---
         List<String> responsablesEstandar = obtenerResponsablesDisponibles();
@@ -289,7 +372,7 @@ private List<String> obtenerResponsablesDisponibles() {
         responsablesSeleccionadosListView.setItems(seleccionados);
         responsablesDisponiblesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         responsablesSeleccionadosListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        actualizarCostoLabel();
+        
         // Ocultar la sección de responsables al inicio
         responsablesHBox.setVisible(false);
         responsablesHBox.setManaged(false);

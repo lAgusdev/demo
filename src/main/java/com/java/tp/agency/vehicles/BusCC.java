@@ -16,7 +16,7 @@ public class BusCC extends Vehicles{
     }
     @Override
     public float calculaCosto(float km, int pasajeros, int cantCamas) {
-        return km*pasajeros*valPasajeroAsiento+valPasajeroCama*cantCamas;
+        return (valPasajeroAsiento * pasajeros * km) + (valPasajeroCama * cantCamas * km);
     }
     public BusCC(){
         super();

@@ -34,12 +34,13 @@ public class LongDis extends Travel{
     //Setters
     public void setDnisPerResponsables(TreeSet<String> dnisPerResponsables) {this.dnisPerResponsables = dnisPerResponsables;}
     //
-    public float calculaSueldos(){
-        HashMap<String,Responsable> responsablesTotales= Agency.getInstancia().getResponsables();
+    public float calculaSueldos(HashMap<String,Responsable> responsables){
         float total=0;
         for (String dni: dnisPerResponsables){
-            Responsable aux = responsablesTotales.get(dni);
-            total+=aux.getSalario();
+            Responsable aux = responsables.get(dni);
+            if (aux != null) {
+                total+=aux.getSalario();
+            }
         }
         return total;
     }
@@ -48,7 +49,12 @@ public class LongDis extends Travel{
         if (cantPas-cantCamas>=6){
             throw new CamasLargaDisException("No hay tantos asientos sin cama disponibles");
         }
-        return vehiculo.calculaCosto(destino.getKm(),cantPas,cantCamas) + calculaSueldos();
+        // Usar responsableABordo para calcular sueldos basados en los responsables seleccionados
+        float sueldosResponsables = 0;
+        for (Responsable responsable : responsableABordo.values()) {
+            sueldosResponsables += responsable.getSalario();
+        }
+        return vehiculo.calculaCosto(destino.getKm(),cantPas,cantCamas) + sueldosResponsables;
     }
 
     public TreeSet<String> getPerResponsables() {
